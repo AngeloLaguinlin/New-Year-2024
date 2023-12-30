@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year 2024!</title>
+</head>
+<script>
+    window.addEventListener('load', onWndLoad, false);
+
+    function onWndLoad() {
+
+        var slider = document.querySelector('.slider');
+        var sliders = slider.children;
+
+
+
+
+        var initX = null;
+        var transX = 0;
+        var rotZ = 0;
+        var transY = 0;
+
+        var curSlide = null;
+
+        var Z_DIS = 50;
+        var Y_DIS = 10;
+        var TRANS_DUR = 0.4;
+
+        var images = document.querySelectorAll('img');
+        for (var i = 0; i < images.length; i++) {
+            images[i].onmousemove = function (e) {
+                e.preventDefault()
+
+            }
+            images[i].ondragstart = function (e) {
+                return false;
+
+            }
+        }
+
+        function init() {
+
+            var z = 0, y = 0;
+
+            for (var i = sliders.length - 1; i >= 0; i--) {
+                sliders[i].style.transform = 'translateZ(' + z + 'px) translateY(' + y + 'px)';
+
+                z -= Z_DIS;
+                y += Y_DIS;
+            }
+
+
+            attachEvents(sliders[sliders.length - 1]);
+
+
+
+        }
+        function attachEvents(elem) {
+            curSlide = elem;
+
+            curSlide.addEventListener('mousedown', slideMouseDown, false);
+            curSlide.addEventListener('touchstart', slideMouseDown, false);
+        }
+        init();
+        function slideMouseDown(e) {
+
+            if (e.touches) {
+                initX = e.touches[0].clientX;
+            }
+            else {
+                initX = e.pageX;
+            }
+
+
+            document.addEventListener('mousemove', slideMouseMove, false);
+            document.addEventListener('touchmove', slideMouseMove, false);
+
+            document.addEventListener('mouseup', slideMouseUp, false);
+            document.addEventListener('touchend', slideMouseUp, false);
+        }
+        var prevSlide = null;
+
+        function slideMouseMove(e) {
+            var mouseX;
+
+            if (e.touches) {
+                mouseX = e.touches[0].clientX;
+            }
+            else {
+                mouseX = e.pageX;
+            }
+
+            transX += mouseX - initX;
+            rotZ = transX / 20;
+
+            transY = -Math.abs(transX / 15);
+
+
+
+            curSlide.style.transition = 'none';
+            curSlide.style.webkitTransform = 'translateX(' + transX + 'px)' + ' rotateZ(' + rotZ + 'deg)' + ' translateY(' + transY + 'px)';
+            curSlide.style.transform = 'translateX(' + transX + 'px)' + ' rotateZ(' + rotZ + 'deg)' + ' translateY(' + transY + 'px)';
+            var j = 1;
+            //remains elements
+            for (var i = sliders.length - 2; i >= 0; i--) {
+
+                sliders[i].style.webkitTransform = 'translateX(' + transX / (2 * j) + 'px)' + ' rotateZ(' + rotZ / (2 * j) + 'deg)' + ' translateY(' + (Y_DIS * j) + 'px)' + ' translateZ(' + (-Z_DIS * j) + 'px)';
+                sliders[i].style.transform = 'translateX(' + transX / (2 * j) + 'px)' + ' rotateZ(' + rotZ / (2 * j) + 'deg)' + ' translateY(' + (Y_DIS * j) + 'px)' + ' translateZ(' + (-Z_DIS * j) + 'px)';
+                sliders[i].style.transition = 'none';
+                j++;
+            }
+
+
+
+            initX = mouseX;
+            e.preventDefault();
+            if (Math.abs(transX) >= curSlide.offsetWidth - 30) {
+
+                document.removeEventListener('mousemove', slideMouseMove, false);
+                document.removeEventListener('touchmove', slideMouseMove, false);
+                curSlide.style.transition = 'ease 0.2s';
+                curSlide.style.opacity = 0;
+                prevSlide = curSlide;
+                attachEvents(sliders[sliders.length - 2]);
+                slideMouseUp();
+                setTimeout(function () {
+
+
+
+
+
+                    slider.insertBefore(prevSlide, slider.firstChild);
+
+                    prevSlide.style.transition = 'none';
+                    prevSlide.style.opacity = '1';
+                    slideMouseUp();
+
+                }, 201);
+
+
+
+                return;
+            }
+        }
+        function slideMouseUp() {
+            transX = 0;
+            rotZ = 0;
+            transY = 0;
+
+            curSlide.style.transition = 'cubic-bezier(0,1.95,.49,.73) ' + TRANS_DUR + 's';
+
+            curSlide.style.webkitTransform = 'translateX(' + transX + 'px)' + 'rotateZ(' + rotZ + 'deg)' + ' translateY(' + transY + 'px)';
+            curSlide.style.transform = 'translateX(' + transX + 'px)' + 'rotateZ(' + rotZ + 'deg)' + ' translateY(' + transY + 'px)';
+            //remains elements
+            var j = 1;
+            for (var i = sliders.length - 2; i >= 0; i--) {
+                sliders[i].style.transition = 'cubic-bezier(0,1.95,.49,.73) ' + TRANS_DUR / (j + 0.9) + 's';
+                sliders[i].style.webkitTransform = 'translateX(' + transX + 'px)' + 'rotateZ(' + rotZ + 'deg)' + ' translateY(' + (Y_DIS * j) + 'px)' + ' translateZ(' + (-Z_DIS * j) + 'px)';
+                sliders[i].style.transform = 'translateX(' + transX + 'px)' + 'rotateZ(' + rotZ + 'deg)' + ' translateY(' + (Y_DIS * j) + 'px)' + ' translateZ(' + (-Z_DIS * j) + 'px)';
+
+                j++;
+            }
+
+            document.removeEventListener('mousemove', slideMouseMove, false);
+            document.removeEventListener('touchmove', slideMouseMove, false);
+
+        }
+
+
+    }
+</script>
+<style>
+    html,
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    .container {
+        height: 100vh;
+        width: 100%;
+        background-image: url(https://cdn.pixabay.com/photo/2017/01/04/21/00/fireworks-1953253_1280.jpg);
+        background-position: center;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .slider div p {
+        color: rgb(0, 0, 0);
+        /* position: absolute; */
+        bottom: -65px;
+        font-family: fantasy;
+        font-size: 10px;
+        text-align: center;
+    }
+
+    .slider {
+
+        /* -webkit-animation: animation ease 1s; */
+        animation-delay: .8s;
+        animation-fill-mode: backwards;
+
+
+        margin: 60px auto 0 auto;
+        height: 360px;
+        width: 240px;
+        padding: 40px;
+        top: 100px;
+
+        perspective: 1000px;
+        transition: ease-in-out .2s;
+        /* -webkit-transform:rotateX(45deg);
+             -webkit-transform-stye:preserve-3d;
+                 position:absolute; */
+    }
+
+    /* .slider:active{ -webkit-transform:rotateZ(10deg);} */
+
+
+    .slide img {
+        text-align: center;
+        width: 100%;
+        height: 80%;
+        -webkit-user-drag: none;
+        /* user-drag: none; */
+        -moz-user-drag: none;
+        border-radius: 2px;
+    }
+
+    .slide {
+
+
+
+        -webkit-user-select: none;
+        user-select: none;
+        -moz-user-select: none;
+        position: absolute;
+        height: 80%;
+        width: 80%;
+
+        box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.3);
+        background: #fcfcfc;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+        text-align: center;
+        /* overflow:hidden; */
+        border: 12px white solid;
+        box-sizing: border-box;
+        border-bottom: 55px white solid;
+        border-radius: 5px;
+
+
+
+    }
+
+    .transition {
+        -webkit-transition: cubic-bezier(0, 1.95, .49, .73) .4s;
+        -moz-transition: cubic-bezier(0, 1.95, .49, .73) .4s;
+        transition: cubic-bezier(0, 1.95, .49, .73) .4s;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="slider">
+            
+            <div class="slide"><img src="https://media.tenor.com/Pdkmbo2nRucAAAAi/newyear-new-year.gif" />
+                <p>Enjoy the rest of the day and once again, Happy New Year Vincent!!</p>
+                <p>- Angelo (안젤로) </p>
+            </div>
+            
+            <div class="slide"><img src="https://media.tenor.com/P62MQSo-jiEAAAAj/kyomti-cute.gif" />
+                <p>I think yun lang po ang gusto ko sabihin huhu, just wanted to let you know that you're awesome, cute, and smart, and I hope you have a great year ahead. </p>
+            </div>
+            
+            <div class="slide"><img src="https://media.tenor.com/4-4jh2Uv_aEAAAAi/cute-heart.gif" />
+                <p>But really it's okay! I really just want to formally confess sainyo. I don't want to regret anything or mag overthink sa gabi, thinking I should have confessed po to you. </p>
+            </div>
+            
+            <div class="slide"><img src="https://media.tenor.com/gzEczvHbet4AAAAi/tkthao219-bunny.gif" />
+                <p>Anyways, I'm not expecting na ma-reciprocate yung feelings ko since I think you're quite busy and have a lot going in your life since graduating po kayo this year. </p>
+
+            </div>
+            <div class="slide"><img src="https://media.tenor.com/-i5DxaW3J70AAAAi/tkthao219-bubududu.gif" />
+                <p>I'm really interested to know you better. I know this is very random, pero here I am, shooting my shot. Maybe, if okay lang po sa'yo, we can hangout sometime or watch a movie.</p>
+            </div>
+
+            <div class="slide"><img src="https://media.tenor.com/9m7YAQPhZMgAAAAj/cute-bear.gif" />
+                <p>And of course, yung pagiging hard-working mo na student. I know architecture course is very hard, but now, you're really close to the finish line. Malayo pa, pero malayo na. Rooting for you!</p>
+            </div>
+
+            <div class="slide"><img src="https://media.tenor.com/Cu9K7vbtsoQAAAAi/kindess-matters-piu-piu.gif" />
+                <p>However, I like your geniune kindness and concern, especially about sa recent issues about jeepney phaseout. You're really showing why you're a true student-leader. Hands down to you! </p>
+            </div>
+
+            <div class="slide"><img src="https://media.tenor.com/kAUQTgDnhgkAAAAi/admiration-pets.gif" />
+                <p>That's the reason why I admire you; I really don't know what to say kasi about sa personality mo kasi we really have little interaction with each other TT. </p>
+            </div>
+
+            <div class="slide"><img src="https://media.tenor.com/Ex1pkci_-v8AAAAi/white-cute-cat-hearts.gif" />
+                <p>So ayun, you may probably know this na(or not) but I'll tell it anyway. I do like you po! Like I find you attractive and cute! </p>
+            </div>
+            <div class="slide"><img src="https://media.tenor.com/UQG0nDZtJDcAAAAj/am-happy.gif" />
+                <p>They say New Year is all about taking chances, getting out from your comfort zone, not worrying about what ifs and embracing 'what could be'.</p>
+            </div>
+            <div class="slide"><img src="https://media.tenor.com/wZkU3UN0-E4AAAAi/mimibubu.gif" />
+                <p>Wishing you joy, success, and new opportunities in the coming year. Cheers to a fantastic year ahead!</p>
+            </div>
+            <div class="slide"><img src="https://media.tenor.com/K6E74DP8JWgAAAAi/happy-sumikko-gurashi.gif" />
+                <p>Hi po!! I just want to greet you and your family a happy new year!! </p>
+                <p> (Swipe left/right)</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
